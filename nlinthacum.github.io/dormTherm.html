@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="assets/css/untitled.css">
 </head>
 
-<body style="background: var(--dark);">
+<body>
     <nav class="navbar navbar-light navbar-expand-md navigation-clean" style="background: rgb(44,62,80);margin: 0px 0px 12px;">
         <div class="container"><a class="navbar-brand" href="#" style="color: var(--white);font-family: Montserrat, sans-serif;font-size: 32px;">Nick Linthacum</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
@@ -34,40 +34,26 @@
             </div>
         </div>
     </nav>
-    <p style="height: 60px;"></p>
-    <div></div>
-    <div></div>
-    <div>
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-md-12" style="margin: 0 px 0px 10px;">
-                    <p style="color: var(--white);text-align: center;font-size: 55px;">Contact</p>
-                    <p class="text-center" style="color: var(--white);font-size: 22px;">I'd love to hear from you! You can reach me at my contact information below:</p>
-                    <p class="text-center" style="color: var(--white);margin: 0px 0px 10px;font-size: 22px;">Email: nick.linthacum@gmail.com</p>
-                    <p class="text-center" style="color: var(--white);margin: 0px 0px 10px;font-size: 22px;">Github:&nbsp;&nbsp;<a href="https://github.com/nlinthacum">nlinthacum</a></p><a class="text-center" href="https://github.com/nlinthacum/nlinthacum.github.io/blob/main/NickLinthacumResume.pdf" style="font-size: 20px;">Resume Link</a>
-                    <p class="text-center" style="color: var(--white);font-size: 22px;"><a href="#NickLinthacumResume.pdf"></a></p><a class="d-flex align-items-center" href="NickLinthacumResume.pdf" target="_blank" style="padding: 4px;"></a><a href="https://www.linkedin.com/in/nicklinthacum/"><img src="assets/img/download%20(4).png" style="width: 150px;display: block;margin: 0px 0px 30px;margin-left: auto;margin-right: auto;"></a>
-                    <p style="color: #888888;text-align: center;">(If you find me on enough platforms, you'll realize I use the same profile picture for all of them :)</p>
-                </div>
-                <div class="col"><a href="#"></a></div>
-            </div>
-            <p style="color: var(--white);text-align: center;margin: 30px 0px 0px;font-size: 22px;">Instagram:</p>
-            <div class="row">
-                <div class="col-md-12"><div>
-<div class='embedsocial-instagram' data-ref="0ad21fa3f224dcd19846c4cf8696c22137881d05"></div><script>(function(d, s, id){var js; if (d.getElementById(id)) {return;} js = d.createElement(s); js.id = id; js.src = "https://embedsocial.com/embedscript/in.js"; d.getElementsByTagName("head")[0].appendChild(js);}(document, "script", "EmbedSocialInstagramScript"));</script>
-</div></div>
+    <div class="container">
+        <h1>Dorm Room Thermostat</h1>
+        <div class="row">
+            <div class="col-md-8 col-xl-5"><img class="img-fluid" src="assets/img/IMG-6409%20(1).jpg" alt="image" style="width: 500px;"></div>
+            <div class="col-md-4 col-xl-6">
+                <h3 class="my-3">Project Description</h3>
+                <p>Github repo:&nbsp;<a href="https://github.com/nlinthacum/fanThermo">overt repo</a></p>
+                <p>This project started out as just a thermistor and an infrared LED hooked up to an Arduino with hopes of controlling my fan according to the temperature. I spent a lot of time trying to duplicate the IR signal that my fan's remote sends to turn it on and off which was made particularly hard since it doesn't follow a standard protocol. During this process, I came across an oLED display and my scope for this project immediately expanded: I could now make a user friendly display to control the temperature. Programming the display brought on a whole new complexity to the project, but made it much more useful and exciting. I added 2 buttons to control the display that allow the user to change the desired temp up and down, scroll through the mode options, and select the desired mode. The scope for the project was expanded once again when I spent several hours debugging code only to find that one of the ground wires had come loose on the breadboard. This painful discovery pushed me to design and fabricate a printed circuit board. I learned Autodesk's EAGLE to design the board. The board design worked great, except for the temperature sensor which had a different pin configuration than my component, resulting in a manual wiring of the pins. Overall, this project allowed me to expand my knowledge of I2C, PCB design, IR communication, and many elements of project organization.&nbsp;</p>
+                <h3 class="my-3"></h3>
+                <ul></ul>
             </div>
         </div>
-    </div>
-    <div class="simple-slider">
-        <div class="swiper-container">
-            <div class="swiper-button-next"></div>
+        <h3 class="my-4">More Pictures</h3>
+        <div class="row">
+            <div class="col-sm-6 col-md-3 mb-4"><img class="img-fluid" src="assets/img/Screen%20Shot%202021-04-03%20at%2011.11.02%20PM.png" alt="Image"></div>
+            <div class="col-sm-6 col-md-3 mb4"><img class="img-fluid" src="assets/img/Screen%20Shot%202021-04-08%20at%209.31.24%20PM.png" alt="Image"></div>
+            <div class="col-sm-6 col-md-3 mb-4"><img class="img-fluid" src="assets/img/IMG-6313.jpg" alt="Image"></div>
+            <div class="col-sm-6 col-md-3 mb-4"><img class="img-fluid" src="assets/img/IMG_6055_2.jpg" alt="Image"></div>
         </div>
     </div>
-    <p style="width: 300px;text-align: center;margin: 50;"></p>
-    <footer class="footer" style="background: #363739;text-align: center;">
-        <div class="container"><span class="text-muted" style="text-align: center;"></span></div>
-        <p style="color: var(--gray);">Official Website of Nick Linthacum❤</p>
-    </footer>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/Animated-Typing-With-Blinking.js"></script>

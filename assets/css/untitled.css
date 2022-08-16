@@ -1,0 +1,9 @@
+.rounded-circle {
+  display: block;
+  border-radius: 50%!important;
+  margin: 0px 0px 20px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+

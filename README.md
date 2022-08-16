@@ -1,2 +1,3 @@
-# nlinthacum.github.io
-Personal Website
+Personal website for Nick Linthacum
+hosted through Github
+

@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nick Linthacum</title>
+  <meta name="description" content="Games AI felt like making. Play Rocket Lander and see what shows up in the arcade next.">
+  <meta name="author" content="Nick Linthacum">
+  <meta name="theme-color" content="#0c0a12">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://nlinthacum.github.io/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="Nick Linthacum">
+  <meta property="og:description" content="Games AI felt like making. Play Rocket Lander and see what shows up in the arcade next.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nlinthacum.github.io/">
+  <meta property="og:image" content="https://nlinthacum.github.io/assets/rocket-lander.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+  <meta property="og:image:alt" content="Rocket Lander: a booster descending toward a drone ship at sunset.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nick Linthacum">
+  <meta name="twitter:description" content="Games AI felt like making. Play Rocket Lander and see what shows up in the arcade next.">
+  <meta name="twitter:image" content="https://nlinthacum.github.io/assets/rocket-lander.png">
+  <style>
+    :root {
+      --ink: #0c0a12;
+      --ink-2: #14121c;
+      --paper: #f4efe4;
+      --paper-dim: #c9c0b2;
+      --muted: #a39c90;
+      --coral: #ff6b4a;
+      --gold: #ffc857;
+      --sea: #8fd4cf;
+      --line: rgba(244, 239, 228, 0.14);
+      --display: "Iowan Old Style", "Palatino Linotype", Palatino, "Noto Serif Display", "Noto Serif", Georgia, serif;
+      --sans: system-ui, "Segoe UI", "Source Sans 3", "Helvetica Neue", sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { background: var(--ink); scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--paper);
+      background:
+        radial-gradient(900px 420px at 50% -10%, rgba(255, 107, 74, 0.16), transparent 60%),
+        var(--ink);
+      font-family: var(--sans);
+      font-size: 1.05rem;
+      line-height: 1.5;
+      text-rendering: optimizeLegibility;
+    }
+
+    #stars {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .skip {
+      position: absolute;
+      left: 1rem;
+      top: -4rem;
+      z-index: 8;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 0.5rem 0.8rem;
+      border-radius: 0.6rem;
+      text-decoration: none;
+    }
+
+    .skip:focus { top: 1rem; }
+
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    ::selection { background: var(--coral); color: #1a0906; }
+
+    a { color: inherit; }
+
+    button {
+      font: inherit;
+      color: inherit;
+      background: none;
+      border: 0;
+      padding: 0;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 4.5rem 1.25rem 7.5rem;
+      overflow: hidden;
+    }
+
+    .glow {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      z-index: 0;
+      width: min(760px, 100%);
+      height: 240px;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse at center bottom, rgba(255, 148, 72, 0.28), rgba(255, 107, 74, 0.08) 42%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .sun {
+      position: absolute;
+      z-index: 0;
+      left: 50%;
+      bottom: -28px;
+      width: 148px;
+      height: 148px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 42%, #ffe3ad 0%, #ffb45a 46%, #ff7a45 100%);
+      box-shadow: 0 0 50px 10px rgba(255, 156, 74, 0.4);
+      pointer-events: none;
+    }
+
+    .sea {
+      position: absolute;
+      z-index: 1;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 96px;
+      background: linear-gradient(to top, var(--ink) 0 46%, rgba(12, 10, 18, 0.55) 68%, rgba(12, 10, 18, 0) 100%);
+      pointer-events: none;
+    }
+
+    .waves {
+      position: absolute;
+      z-index: 2;
+      left: 0;
+      right: 0;
+      bottom: 22px;
+      width: 100%;
+      height: 54px;
+      pointer-events: none;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 40rem;
+      gap: 0.85rem;
+    }
+
+    h1 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 0;
+    }
+
+    .first {
+      font-family: var(--display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(4.6rem, 12vw, 9rem);
+      line-height: 0.82;
+      letter-spacing: -0.03em;
+    }
+
+    .last {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+      letter-spacing: 0.48em;
+      text-transform: uppercase;
+      padding-left: 0.48em;
+      color: var(--paper-dim);
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.95rem;
+      padding: 0.78rem 1.15rem;
+      border-radius: 999px;
+      background: var(--paper);
+      color: #1a120c;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .cta svg { display: block; }
+
+    @media (hover: hover) {
+      .cta:hover { background: var(--gold); }
+    }
+
+    .launch {
+      margin-top: 0.15rem;
+      width: 44px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      border-radius: 999px;
+    }
+
+    .rocket-icon { display: block; transition: transform 0.2s ease; }
+
+    @media (hover: hover) {
+      .launch:hover .rocket-icon { transform: translateY(-3px); }
+    }
+
+    .launch.away .rocket-icon { visibility: hidden; }
+
+    .rocket-icon .flame {
+      transform-box: fill-box;
+      transform-origin: center top;
+      animation: flicker 0.4s ease-in-out infinite;
+    }
+
+    @keyframes flicker {
+      from { transform: scaleY(0.72); }
+      to { transform: scaleY(1.12); }
+    }
+
+    .flyer {
+      position: fixed;
+      z-index: 5;
+      margin: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform-origin: center bottom;
+    }
+
+    .flyer .rocket-icon { width: 32px; height: 57px; }
+
+    .flyer.go { animation: liftoff 2.45s cubic-bezier(.17, .7, .2, 1) forwards; }
+
+    @keyframes liftoff {
+      0% { opacity: 1; transform: translate(-50%, 0) scale(0.72) rotate(0deg); }
+      16% { opacity: 1; transform: translate(-46%, -12vh) scale(0.86) rotate(-7deg); }
+      55% { opacity: 1; transform: translate(-60%, -56vh) scale(1) rotate(5deg); }
+      100% { opacity: 0; transform: translate(-50%, -108vh) scale(1) rotate(-2deg); }
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 1.15rem;
+      z-index: 6;
+      max-width: min(28rem, calc(100% - 2rem));
+      padding: 0.65rem 0.95rem;
+      border-radius: 999px;
+      background: var(--paper);
+      color: #1a120c;
+      font-size: 0.92rem;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+      opacity: 0;
+      visibility: hidden;
+      transform: translate(-50%, 8px);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0s linear 0.35s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0s;
+    }
+
+    main { position: relative; z-index: 1; }
+
+    .arcade {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 4.25rem 1.25rem 4.5rem;
+      scroll-margin-top: 1.25rem;
+    }
+
+    .arcade h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 500;
+      font-size: clamp(2.5rem, 5vw, 3.7rem);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .arcade h2::after {
+      content: "";
+      display: block;
+      width: 3.1rem;
+      height: 3px;
+      margin-top: 0.7rem;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--coral), var(--gold));
+    }
+
+    .lede {
+      margin: 0.9rem 0 1.7rem;
+      max-width: 34rem;
+      color: var(--paper-dim);
+    }
+
+    .cards {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.75rem), 1fr));
+      gap: 1.15rem;
+    }
+
+    .cards > li { display: flex; min-width: 0; }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 28%), var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: 1.15rem;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
+      animation: fade-in 0.55s ease both;
+    }
+
+    .cards li:nth-child(2) .card { animation-delay: 0.07s; }
+    .cards li:nth-child(3) .card { animation-delay: 0.14s; }
+
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+    @media (hover: hover) {
+      a.card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 200, 87, 0.5);
+      }
+
+      a.card:hover img { transform: scale(1.035); }
+    }
+
+    .screen {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: #1a1724;
+      overflow: hidden;
+    }
+
+    .screen img,
+    .motif,
+    .motif svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .screen img {
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      flex: 1;
+      padding: 0.95rem 1.05rem 1.1rem;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 1.4rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .led {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+      flex: none;
+      background: #8dffb0;
+      box-shadow: 0 0 8px #8dffb0;
+    }
+
+    .blurb {
+      margin: 0;
+      flex: 1;
+      color: var(--paper-dim);
+      font-size: 0.98rem;
+    }
+
+    .badge {
+      align-self: flex-start;
+      margin-top: 0.55rem;
+      padding: 0.32rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge.play { background: var(--coral); color: #1a0906; }
+    .badge.soon {
+      background: transparent;
+      color: var(--muted);
+      border: 1px dashed rgba(244, 239, 228, 0.32);
+    }
+
+    .card.soon {
+      background: #110f18;
+      border-style: dashed;
+      box-shadow: none;
+    }
+
+    .card.soon .screen { filter: grayscale(0.9) brightness(0.72); }
+    .card.soon h3,
+    .card.soon .blurb { color: var(--muted); }
+    .card.soon .led { background: #4a463c; box-shadow: none; }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-inner {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 1.15rem 1.25rem 1.6rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      color: var(--paper-dim);
+      font-size: 0.95rem;
+    }
+
+    .footer-inner p { margin: 0; }
+
+    .footer-inner a {
+      color: var(--paper);
+      text-underline-offset: 0.18em;
+    }
+
+    @media (hover: hover) {
+      .footer-inner a:hover { color: var(--gold); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .rocket-icon .flame,
+      .card { animation: none; }
+      .screen img,
+      .rocket-icon,
+      .toast,
+      a.card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <a class="skip" href="#arcade">Skip to the arcade</a>
+
+  <header class="hero" id="top">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="sun" aria-hidden="true"></div>
+    <div class="sea" aria-hidden="true"></div>
+    <svg class="waves" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 46c80 16 160 16 240 0s160-16 240 0 160 16 240 0 160-16 240 0 160 16 240 0 160-16 240 0" fill="none" stroke="rgba(143,212,207,0.45)" stroke-width="1.6"/>
+      <path d="M0 62c90 12 180 12 270 0s180-12 270 0 180 12 270 0 180-12 270 0 180 12 270 0" fill="none" stroke="rgba(244,239,228,0.22)" stroke-width="1.3"/>
+    </svg>
+    <div class="hero-copy">
+      <h1>
+        <span class="first">Nick</span>
+        <span class="last">Linthacum</span>
+      </h1>
+      <a class="cta" href="#arcade">
+        See the arcade
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <path d="M8 2.5v9.5M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <button class="launch" id="launch" type="button" aria-label="Launch a tiny rocket">
+        <svg class="rocket-icon" viewBox="0 0 36 64" width="22" height="39" aria-hidden="true">
+          <path class="flame" d="M18 62c-2.2-6.2-.8-11 0-15.2 1 4.4 2.2 9.2 0 15.2z" fill="#ff6b4a"/>
+          <path d="M18 56.5c-1.2-3.6-.4-6.8 0-9.4.7 2.6 1.2 5.8 0 9.4z" fill="#ffe7b8"/>
+          <path d="M12.2 40.5 5.2 53.2h7.6l-.6-12.7z" fill="#ff6b4a"/>
+          <path d="M23.8 40.5 30.8 53.2h-7.6l.6-12.7z" fill="#ff6b4a"/>
+          <path d="M18 3.5c4.2 8.2 6.2 14.6 6.2 23.2V42H11.8V26.7c0-8.6 2-15 6.2-23.2z" fill="#f6f1e6"/>
+          <path d="M14.2 22.5h7.6v7.2c0 1.2-2.6 3.4-3.8 3.4s-3.8-2.2-3.8-3.4z" fill="#e4d9c8"/>
+          <circle cx="18" cy="26.2" r="2.7" fill="#143236"/>
+          <circle cx="18" cy="25.6" r="1.25" fill="#9ee0db"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="arcade" id="arcade" aria-labelledby="arcade-title">
+      <h2 id="arcade-title">Arcade</h2>
+      <p class="lede">Games AI felt like making</p>
+      <ul class="cards" id="cards">
+        <noscript>
+          <li>
+            <a class="card" href="https://nlinthacum.github.io/rocket-lander/">
+              <div class="screen">
+                <img src="assets/rocket-lander.png" width="1280" height="720" alt="A booster descending toward a drone ship at sunset." loading="eager">
+              </div>
+              <div class="card-body">
+                <div class="title-row">
+                  <h3>Rocket Lander</h3>
+                </div>
+                <p class="blurb">Land a reusable booster on a drone ship. Wind and rolling seas get harder each level. Works on phone and desktop.</p>
+                <span class="badge play">Play</span>
+              </div>
+            </a>
+          </li>
+        </noscript>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p><a href="#top">Nick Linthacum</a></p>
+      <a href="https://github.com/nlinthacum" rel="me">GitHub</a>
+    </div>
+  </footer>
+
+  <div class="flyer" id="flyer" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* ============================================================
+       GAMES
+       Add a card by appending an object, then push to main.
+       status "play" needs href + image. Use a full
+       https://nlinthacum.github.io/… URL so the link still
+       works after a custom domain is attached.
+       status "soon" is a greyed-out cabinet.
+       motif (optional): "maze", "word", or "spark".
+       ============================================================ */
+    const GAMES = [
+      {
+        title: "Rocket Lander",
+        blurb: "Land a reusable booster on a drone ship. Wind and rolling seas get harder each level. Works on phone and desktop.",
+        href: "https://nlinthacum.github.io/rocket-lander/",
+        image: "assets/rocket-lander.png",
+        alt: "A booster descending toward a drone ship at sunset.",
+        status: "play"
+      },
+      {
+        title: "Robot Maze",
+        blurb: "A pocket robot and a maze that will not sit still. The chassis is still on the workbench.",
+        status: "soon",
+        motif: "maze"
+      },
+      {
+        title: "Daily Word Game",
+        blurb: "Five letters, a few guesses, one puzzle a day. The words are still in the mail.",
+        status: "soon",
+        motif: "word"
+      }
+    ];
+
+    const MOTIFS = {
+      maze: '<svg viewBox="0 0 320 180" aria-hidden="true" focusable="false"><rect width="320" height="180" fill="#1a1724"/><g fill="none" stroke="#3a3550" stroke-width="10" stroke-linecap="square"><path d="M28 28h264v124H28z"/><path d="M28 68h70M98 68v50M98 118h48M168 28v62h52M220 90v62M146 90h-48"/></g><rect x="44" y="42" width="18" height="18" rx="3" fill="#8fd4cf"/><circle cx="250" cy="128" r="6" fill="#ffc857"/></svg>',
+      word: '<svg viewBox="0 0 320 180" aria-hidden="true" focusable="false"><rect width="320" height="180" fill="#1a1724"/><g fill="#241f30" stroke="#3a3550" stroke-width="2"><rect x="28" y="62" width="44" height="52" rx="6"/><rect x="82" y="62" width="44" height="52" rx="6"/><rect x="136" y="62" width="44" height="52" rx="6"/><rect x="190" y="62" width="44" height="52" rx="6"/><rect x="244" y="62" width="44" height="52" rx="6"/></g><text x="158" y="97" text-anchor="middle" fill="#ffc857" font-family="Georgia, serif" font-size="28">?</text></svg>',
+      spark: '<svg viewBox="0 0 320 180" aria-hidden="true" focusable="false"><rect width="320" height="180" fill="#1a1724"/><g fill="#f4efe4"><circle cx="70" cy="58" r="2"/><circle cx="150" cy="40" r="1.4"/><circle cx="230" cy="70" r="2.2"/><circle cx="110" cy="110" r="1.3"/><circle cx="200" cy="124" r="1.6"/><circle cx="260" cy="40" r="1.2"/></g><circle cx="168" cy="88" r="3" fill="#ffc857"/></svg>'
+    };
+
+    function safeHref(href) {
+      try {
+        const url = new URL(href);
+        if (url.protocol === "https:") return url.href;
+      } catch (err) { /* ignore bad entries */ }
+      return "";
+    }
+
+    function safeImage(src) {
+      return typeof src === "string" && /^assets\/[A-Za-z0-9._/-]+$/.test(src) ? src : "";
+    }
+
+    function el(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text != null) node.textContent = text;
+      return node;
+    }
+
+    function renderGames() {
+      const list = document.getElementById("cards");
+      const items = GAMES.map((game) => {
+        const href = safeHref(game.href);
+        const image = safeImage(game.image);
+        const playable = game.status === "play" && href && image;
+        const card = playable ? el("a", "card") : el("article", "card soon");
+        if (playable) card.href = href;
+
+        const screen = el("div", "screen");
+        if (playable) {
+          const img = document.createElement("img");
+          img.src = image;
+          img.alt = game.alt || "";
+          img.width = 1280;
+          img.height = 720;
+          img.decoding = "async";
+          img.loading = "eager";
+          screen.append(img);
+        } else {
+          const motif = el("div", "motif");
+          motif.innerHTML = MOTIFS[game.motif] || MOTIFS.spark;
+          screen.append(motif);
+        }
+
+        const body = el("div", "card-body");
+        const row = el("div", "title-row");
+        const led = el("span", "led");
+        led.setAttribute("aria-hidden", "true");
+        row.append(el("h3", "", game.title), led);
+        body.append(
+          row,
+          el("p", "blurb", game.blurb),
+          el("span", playable ? "badge play" : "badge soon", playable ? "Play" : "Coming soon")
+        );
+        card.append(screen, body);
+
+        const item = el("li");
+        item.append(card);
+        return item;
+      });
+      list.replaceChildren(...items);
+    }
+
+    renderGames();
+
+    (function stars() {
+      const canvas = document.getElementById("stars");
+      const ctx = canvas.getContext("2d");
+      const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      let stars = [];
+      let raf = 0;
+      let running = false;
+      let partyUntil = 0;
+      const dprCap = 2;
+
+      function build() {
+        const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+        const count = Math.max(40, Math.min(120, Math.floor((width * height) / 14000)));
+        stars = Array.from({ length: count }, () => {
+          const roll = Math.random();
+          return {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: (Math.random() * 1.15 + 0.35) * dpr,
+            phase: Math.random() * Math.PI * 2,
+            speed: Math.random() * 0.006 + 0.002,
+            drift: (Math.random() - 0.5) * 0.08 * dpr,
+            color: roll > 0.93 ? "255,200,87" : roll > 0.86 ? "143,212,207" : "244,239,228"
+          };
+        });
+      }
+
+      function draw(now) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const party = now < partyUntil;
+        for (const star of stars) {
+          if (!motion.matches) {
+            star.phase += star.speed;
+            star.y += (party ? 0.45 : 0.12) * (window.devicePixelRatio || 1);
+            star.x += star.drift;
+            if (star.y > canvas.height) star.y = 0;
+            if (star.x < 0) star.x = canvas.width;
+            if (star.x > canvas.width) star.x = 0;
+          }
+          const alpha = motion.matches ? 0.7 : 0.28 + Math.abs(Math.sin(star.phase)) * 0.72;
+          ctx.beginPath();
+          ctx.fillStyle = "rgba(" + (party ? "255,200,87" : star.color) + "," + alpha + ")";
+          ctx.arc(star.x, star.y, party ? star.r * 1.35 : star.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function frame(now) {
+        draw(now);
+        if (running) raf = requestAnimationFrame(frame);
+      }
+
+      function start() {
+        if (running || document.hidden) return;
+        running = true;
+        raf = requestAnimationFrame(frame);
+      }
+
+      function stop() {
+        running = false;
+        cancelAnimationFrame(raf);
+      }
+
+      build();
+      if (motion.matches) draw(0);
+      else start();
+
+      window.addEventListener("resize", () => {
+        build();
+        if (motion.matches || document.hidden) draw(performance.now());
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stop();
+        else if (!motion.matches) start();
+      });
+
+      document.addEventListener("nick-party", (event) => {
+        partyUntil = performance.now() + (event.detail || 4000);
+        if (motion.matches) draw(performance.now());
+      });
+    })();
+
+    (function rocket() {
+      const button = document.getElementById("launch");
+      const flyer = document.getElementById("flyer");
+      const toast = document.getElementById("toast");
+      flyer.append(button.querySelector(".rocket-icon").cloneNode(true));
+      const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const lines = [
+        "Nominal. The drone ship says hi.",
+        "A little wind. Still a soft landing.",
+        "Fuel at 90%. Purely for fun."
+      ];
+      let launches = 0;
+      let busy = false;
+      let timer = 0;
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(timer);
+        timer = setTimeout(() => toast.classList.remove("show"), 2600);
+      }
+
+      function launch() {
+        launches += 1;
+        showToast(lines[(launches - 1) % lines.length]);
+        if (motion.matches || busy) return;
+        const rect = button.getBoundingClientRect();
+        flyer.style.left = (rect.left + rect.width / 2) + "px";
+        flyer.style.top = (rect.bottom - 57) + "px";
+        busy = true;
+        button.classList.add("away");
+        flyer.classList.remove("go");
+        void flyer.offsetWidth;
+        flyer.classList.add("go");
+        flyer.addEventListener("animationend", () => {
+          flyer.classList.remove("go");
+          button.classList.remove("away");
+          busy = false;
+        }, { once: true });
+      }
+
+      button.addEventListener("click", launch);
+
+      const konami = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+      let step = 0;
+      window.addEventListener("keydown", (event) => {
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (key !== konami[step]) {
+          step = key === konami[0] ? 1 : 0;
+          return;
+        }
+        step += 1;
+        if (step < konami.length) return;
+        step = 0;
+        showToast("Extra life. The stars noticed.");
+        document.dispatchEvent(new CustomEvent("nick-party", { detail: 4200 }));
+      });
+    })();
+  </script>
+</body>
+</html>

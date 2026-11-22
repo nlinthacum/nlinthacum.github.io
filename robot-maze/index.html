@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Robot Maze</title>
+  <meta name="description" content="Guide a pocket robot through a maze that will not sit still. Reach the charging pad, climb the levels, and post a score.">
+  <meta name="theme-color" content="#0c0a12">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://nicklinthacum.com/robot-maze/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="shell">
+    <header class="top">
+      <a class="back" href="/">← Arcade</a>
+      <h1>Robot Maze</h1>
+      <button id="sound" class="icon-btn muted" type="button" aria-pressed="false" aria-label="Unmute sound">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M4 9.5h3.2L12 5.2v13.6l-4.8-4.3H4z"/>
+          <path class="wave" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M15.2 9.2a3.4 3.4 0 0 1 0 5.6M17.6 7a6 6 0 0 1 0 10"/>
+        </svg>
+      </button>
+    </header>
+
+    <section id="start">
+      <div class="start-grid">
+        <div>
+          <p class="lede">A pocket robot and a maze that will not sit still.</p>
+          <ul class="rules">
+            <li>Dock on the charging pad before the battery dies.</li>
+            <li>Gold walls slide. The pale corridors stay put.</li>
+            <li>Each bay you clear adds points. Fewer moves and a quicker dock score higher.</li>
+          </ul>
+          <div class="actions-row">
+            <button id="start-play" class="play-btn" type="button">Play</button>
+          </div>
+          <p class="best-line" id="device-best">Best on this device: —</p>
+          <p class="formula">Score is 2,500 for each level cleared, minus 12 per move and 4 per second.</p>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Top 10</h2>
+            <button id="refresh-start" class="linkish" type="button">Refresh</button>
+          </div>
+          <p class="status" id="start-status" role="status">Loading scores…</p>
+          <ol class="scores" id="start-scores" aria-label="Top 10 scores"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="play" hidden>
+      <div class="hud">
+        <div class="stat">
+          <span class="k">Level</span>
+          <span class="v" id="level-readout">1</span>
+        </div>
+        <div class="stat">
+          <span class="k">Moves</span>
+          <span class="v" id="moves-readout">0</span>
+          <span class="sub" id="best-readout">Best —</span>
+        </div>
+        <div class="stat">
+          <span class="k">Score</span>
+          <span class="v" id="score-readout">0</span>
+        </div>
+        <div class="stat charge-stat" id="charge-stat">
+          <span class="k">Charge</span>
+          <span class="v" id="charge-readout">80s</span>
+          <span class="bar" aria-hidden="true"><span id="charge-bar"></span></span>
+        </div>
+      </div>
+      <p class="shiftline">
+        <span class="k">Walls slide</span>
+        <span id="shift-readout">12s</span>
+        <span class="meter" aria-hidden="true"><span id="shift-bar"></span></span>
+      </p>
+      <p class="hint" id="hint">Gold walls slide. Pale corridors stay. Reach the pad to recharge.</p>
+      <p class="keys">Arrows or WASD to move. Z undoes. R restarts the bay.</p>
+      <div class="stage">
+        <div class="slot" id="slot">
+          <canvas id="board" aria-hidden="true"></canvas>
+          <div class="modal" id="clear-modal" hidden>
+            <p class="eyebrow" id="clear-eyebrow">Level 1</p>
+            <h2>Charged</h2>
+            <p id="clear-detail"></p>
+            <p id="clear-best" hidden>New best for this level.</p>
+            <div class="actions-row">
+              <button id="next-level" class="primary" type="button">Next level</button>
+              <button id="bank-clear" class="ghost" type="button">End run</button>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <div class="dpad" role="group" aria-label="Move">
+            <button type="button" data-dir="up" aria-label="Move up">↑</button>
+            <button type="button" data-dir="left" aria-label="Move left">←</button>
+            <button type="button" data-dir="down" aria-label="Move down">↓</button>
+            <button type="button" data-dir="right" aria-label="Move right">→</button>
+          </div>
+          <div class="side-actions">
+            <button id="undo" class="textbtn" type="button">Undo</button>
+            <button id="restart" class="textbtn" type="button">Restart</button>
+            <button id="bank" class="textbtn" type="button">End run</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="result" hidden>
+      <div class="result-grid">
+        <div>
+          <p class="reason" id="result-reason">The battery gave out.</p>
+          <p class="big-score" id="result-score">0</p>
+          <p class="best-line" id="result-meta"></p>
+          <p class="formula">2,500 for each level cleared, minus 12 per move and 4 per second. Higher is better.</p>
+          <form id="score-form" class="score-form">
+            <label class="sr" for="player-name">Name</label>
+            <input id="player-name" name="player" maxlength="16" autocomplete="nickname" spellcheck="false" autocapitalize="off" placeholder="Your name" aria-describedby="name-help">
+            <button id="submit-score" class="primary" type="submit">Submit</button>
+          </form>
+          <p class="formula" id="name-help">1–16 letters, numbers, spaces, _ or -.</p>
+          <p class="status" id="result-msg" role="status"></p>
+          <p class="reason" id="rank-line" hidden></p>
+          <div class="actions-row">
+            <button id="again" class="play-btn" type="button">Play again</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Top 10</h2>
+            <button id="refresh-result" class="linkish" type="button">Refresh</button>
+          </div>
+          <ol class="scores" id="result-scores" aria-label="Top 10 scores"></ol>
+        </div>
+      </div>
+    </section>
+  </div>
+  <p id="live" class="sr" aria-live="polite"></p>
+  <script src="maze.js"></script>
+  <script src="leaderboard.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -18,7 +18,7 @@ Personal homepage, published with GitHub Pages at [nlinthacum.github.io](https:/
 }
 ```
 
-Use a full `https://nlinthacum.github.io/…` link so the card still works after a custom domain points at this repo. A coming-soon card only needs `title`, `blurb`, and `status: "soon"`. Optional `motif` is `"maze"`, `"word"`, or `"spark"`.
+Use a root-relative path such as `/my-game/`, or a full `https://…` URL. A coming-soon card only needs `title`, `blurb`, and `status: "soon"`. Optional `motif` is `"maze"`, `"word"`, or `"spark"`.
 
 3. Push to `main`.
 

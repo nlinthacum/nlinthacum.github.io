@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nick Linthacum</title>
-  <meta name="description" content="Games AI felt like making. Play Rocket Lander and Robot Maze.">
+  <meta name="description" content="Games AI felt like making. Play Rocket Lander.">
   <meta name="author" content="Nick Linthacum">
   <meta name="theme-color" content="#0c0a12">
   <meta name="color-scheme" content="dark">
   <link rel="canonical" href="https://nlinthacum.github.io/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta property="og:title" content="Nick Linthacum">
-  <meta property="og:description" content="Games AI felt like making. Play Rocket Lander and Robot Maze.">
+  <meta property="og:description" content="Games AI felt like making. Play Rocket Lander.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://nlinthacum.github.io/">
   <meta property="og:image" content="https://nlinthacum.github.io/assets/rocket-lander.png">
@@ -20,7 +20,7 @@
   <meta property="og:image:alt" content="Rocket Lander: a booster descending toward a drone ship at sunset.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nick Linthacum">
-  <meta name="twitter:description" content="Games AI felt like making. Play Rocket Lander and Robot Maze.">
+  <meta name="twitter:description" content="Games AI felt like making. Play Rocket Lander.">
   <meta name="twitter:image" content="https://nlinthacum.github.io/assets/rocket-lander.png">
   <style>
     :root {
@@ -327,6 +327,15 @@
       gap: 1.15rem;
     }
 
+    /* A lone game is a feature, not a cabinet stretched across the row. */
+    .cards:has(> li:only-child) {
+      grid-template-columns: minmax(0, 40rem);
+    }
+
+    .cards > li:only-child .card h3 {
+      font-size: clamp(1.7rem, 3vw, 2.15rem);
+    }
+
     .cards > li { display: flex; min-width: 0; }
 
     .card {
@@ -546,20 +555,6 @@
               </div>
             </a>
           </li>
-          <li>
-            <a class="card" href="/robot-maze/">
-              <div class="screen">
-                <img src="assets/robot-maze.png" width="1280" height="720" alt="A pocket robot in a dark maze, heading toward a glowing charging pad." loading="eager">
-              </div>
-              <div class="card-body">
-                <div class="title-row">
-                  <h3>Robot Maze</h3>
-                </div>
-                <p class="blurb">A pocket robot and a maze that will not sit still. Steer it to the charging pad before the gold walls slide.</p>
-                <span class="badge play">Play</span>
-              </div>
-            </a>
-          </li>
         </noscript>
       </ul>
     </section>
@@ -580,7 +575,7 @@
        GAMES
        Add a card by appending an object, then push to main.
        status "play" needs href + image.
-       href can be a root path like /robot-maze/ or a full https URL.
+       href can be a root path like /my-game/ or a full https URL.
        status "soon" is a greyed-out cabinet.
        motif (optional): "maze", "word", or "spark".
        ============================================================ */
@@ -592,20 +587,6 @@
         image: "assets/rocket-lander.png",
         alt: "A booster descending toward a drone ship at sunset.",
         status: "play"
-      },
-      {
-        title: "Robot Maze",
-        blurb: "A pocket robot and a maze that will not sit still. Steer it to the charging pad before the gold walls slide.",
-        href: "/robot-maze/",
-        image: "assets/robot-maze.png",
-        alt: "A pocket robot in a dark maze, heading toward a glowing charging pad.",
-        status: "play"
-      },
-      {
-        title: "Daily Word Game",
-        blurb: "Five letters, a few guesses, one puzzle a day. The words are still in the mail.",
-        status: "soon",
-        motif: "word"
       }
     ];
 
